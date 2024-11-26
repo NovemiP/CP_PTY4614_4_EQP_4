@@ -52,7 +52,6 @@
     }
 </script>
 
-
 <!--grafico en el dashboard con niveles de inventario-->
 <script>
     // obtener los datos del inventario
@@ -68,42 +67,39 @@
     async function crearGrafico() {
         const datosInventario = await obtenerNivelesInventario();
 
-        // Si no hay datos, se muestran vacios
-        const productos = datosInventario.length > 0 ? datosInventario.map(item => item.nombre_producto) : [];
-        const existencias = datosInventario.length > 0 ? datosInventario.map(item => item.existencia_actual) : [];
+        // Filtrar productos con existencia mayor que 0
+        const productosFiltrados = datosInventario.filter(item => item.existencia_actual > 0);
 
-
+        // Si no hay productos con existencia mayor que 0, mostramos un mensaje vacío
+        const productos = productosFiltrados.length > 0 ? productosFiltrados.map(item => item.nombre_producto) : ['No hay productos con inventario disponible.'];
+        const existencias = productosFiltrados.length > 0 ? productosFiltrados.map(item => item.existencia_actual) : [0];
 
         const ctx = document.getElementById('nivelesInventarioChart').getContext('2d');
         const chart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: productos.length > 0 ? productos : ['No hay productos con inventario reducido.'],
+                labels: productos,
                 datasets: [{
                     label: 'Existencia Actual',
-                    data: existencias.length > 0 ? existencias : [0],
+                    data: existencias,
                     backgroundColor: 'rgb(113, 198, 100)',
                     borderColor: 'rgb(113, 198, 100)',
                     borderWidth: 1,
                     barThickness: 30
                 }]
             },
-
             options: {
                 responsive: true,
-
                 scales: {
                     y: {
                         beginAtZero: true,
-                        suggestedMin: 1, //para que el eje Y comienze desde el 1
+                        suggestedMin: 1, // para que el eje Y comience desde el 1
                         ticks: {
-                            stepSize: 1, //para que solo se muestren  numeros enteros
+                            stepSize: 1, // para que solo se muestren números enteros
                             callback: function (value) {
                                 return Number.isInteger(value) ? value : '';
                             }
                         }
-
-
                     }
                 }
             }
@@ -129,10 +125,10 @@
         });
     });
 
-    //filtrar por factura
+    //filtrar por nro de recepcion
     $(document).ready(function () {
         // Filtro de búsqueda
-        $("#filtroFactura").on("keyup", function () {
+        $("#filtroRecepcion").on("keyup", function () {
             var valorBusqueda = $(this).val().toLowerCase();
             $("#tabla-inventario tbody tr").filter(function () {
                 $(this).toggle($(this).text().toLowerCase().indexOf(valorBusqueda) > -1);
@@ -151,10 +147,10 @@
         });
     });
 
-    //filtrar por codigo producto
+    //filtrar por nro factura producto
     $(document).ready(function () {
         // Filtro de búsqueda
-        $("#filtroCodigo").on("keyup", function () {
+        $("#filtroFactura").on("keyup", function () {
             var valorBusqueda = $(this).val().toLowerCase();
             $("#tabla-inventario tbody tr").filter(function () {
                 $(this).toggle($(this).text().toLowerCase().indexOf(valorBusqueda) > -1);
@@ -222,6 +218,8 @@
         document.getElementById('ubicacion').value = selectedOption.getAttribute('data-ubicacion');
     });
 </script>
+
+
 
 <!--rellenar formulario salida-->
 <script>
@@ -314,20 +312,20 @@
 
 <!--funcion para calcular iva y mostrar en el campo de la entrada-->
 <script>
-    document.getElementById('producto_id').addEventListener('change',function(){
+    document.getElementById('producto_id').addEventListener('change', function () {
         //obtengo el valor unitario del producto
         var producto = this.options[this.selectedIndex];
         var valorUnitario = parseFloat(producto.getAttribute('data-valor').replace(/[^\d.-]/g, ''));
 
         //calculo del iva
-        var iva = valorUnitario * 0.19 ;
+        var iva = valorUnitario * 0.19;
 
         //formato iva
         var ivaChileno = "$" + iva.toFixed(3).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
         //me muestra el valor del iva en el campo que esta en la entrada
         document.getElementById('iva').value = ivaChileno;
-       
+
 
     })
 </script>

@@ -131,10 +131,10 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
         </div>
         
         <div class="col-auto d-flex gap-2 align-items-center">
-            <form action="../libs/guia_traslado.php" method="GET" class="d-flex">
+            <form action="../libs/guia_salida.php" method="GET" class="d-flex">
 
                 <select class="form-select  me-2 mb-2" name="nro_guia" id="nro_guia" style="width: 200px;">
-                    <option value="" disabled selected> Nro guía</option>
+                    <option value="" disabled selected> Nro Guía</option>
                     <?php
                     $guia_nro = Salida::listarNroGuia();
                     foreach ($guia_nro as $guia) {

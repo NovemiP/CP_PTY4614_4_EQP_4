@@ -123,47 +123,55 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                         <form id="form-inventario" class="row form-registro mx-auto" action="../controllers/inventarioController.php" method="POST">
                             <!-- Producto -->
                             <div class="mb-3">
-                                <select class="form-select" id="producto_id" name="producto_id" required>
-                                    <option value="" disabled selected>Seleccionar producto</option>
+                                 <select class="form-select" id="producto_id" name="producto_id" required>
+                                    <option value="" disabled selected>Seleccionar Nro Factura</option>
                                     <?php
                                     // Llama a la función que lista los productos desde el modelo
                                     $productos = Producto::listarProdEntrada();
+
+
                                     foreach ($productos as $producto) {
                                         echo '<option value="' . htmlspecialchars($producto['id_producto']) . '" 
                         data-proveedor="' . htmlspecialchars($producto['nombre_prove']) . '"
                         data-codigo="' . htmlspecialchars($producto['cod_producto']) . '" 
                         data-nombre="' . htmlspecialchars($producto['nombre_producto']) . '" 
-                        data-valor="$' . number_format($producto['valor_unitario'],0,',','.') . '" 
+                        data-valor="$' . number_format($producto['valor_unitario'], 0, ',', '.') . '" 
                         data-ubicacion="' . htmlspecialchars($producto['nombre_zona']) . '">'
-                                            . htmlspecialchars($producto['nombre_producto']) .
+                                            . htmlspecialchars($producto['nro_factura']) . ' - ' . htmlspecialchars($producto['nombre_producto']) .
                                             '</option>';
                                     }
                                     ?>
-                                </select>
+                                </select> 
+                               
                             </div>
 
                             <!-- Detalles automáticos del producto -->
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Proveedor</label>
                                 <input type="text" class="form-control" id="nombre_prove" name="nombre_prove" placeholder="Proveedor" readonly>
                             </div>
-                            
-                            
+
+
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Código producto</label>
                                 <input type="text" class="form-control" id="cod_producto" name="cod_producto" placeholder="Código producto" readonly>
                             </div>
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Producto</label>
                                 <input type="text" class="form-control" id="nombre_producto" name="nombre_producto" placeholder="Producto" readonly>
                             </div>
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Valor unitario</label>
                                 <input type="text" class="form-control" id="valor_unitario" name="valor_unitario" placeholder="Valor Unitario" readonly>
                             </div>
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">IVA</label>
                                 <input type="text" class="form-control" id="iva" name="iva" placeholder="Iva (19%)" readonly>
                             </div>
 
 
                             <div class="mb-3">
-                                <!-- Existencia Inicial -->
+                                <label for="nombre" class="form-label">Cantidad</label>
                                 <input type="number" class="form-control" id="existencia_inicial" name="existencia_inicial" placeholder="Ingresar cantidad" required>
                             </div>
 

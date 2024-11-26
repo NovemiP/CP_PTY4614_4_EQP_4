@@ -36,7 +36,7 @@ class Inventario
                 producto.valor_unitario,
                 producto.unidad_medida, 
                 ubicacion.nombre_zona,
-                factura.nro_factura
+                recepcion.nro_recepcion
             FROM 
                 inventario
             LEFT JOIN 
@@ -46,7 +46,7 @@ class Inventario
             LEFT JOIN 
                 ubicacion ON producto.ubicacion_id_ubicacion = ubicacion.id_ubicacion
             LEFT JOIN 
-                factura ON factura.inventario_id_inventario = inventario.id_inventario
+                recepcion ON recepcion.inventario_id_inventario = inventario.id_inventario
             WHERE 
                 inventario.tipo_movimiento = 'Entrada'
             LIMIT :limit OFFSET :offset";
@@ -68,7 +68,7 @@ class Inventario
             $conexionBD = self::crearInstancia();
 
             //verifica si el producto ya existe en el inventario y no esta en estado agotado
-            $consultarExistencia = $conexionBD->prepare("SELECT * FROM inventario WHERE producto_id_producto = :producto_id AND estado_inve IN ('Activo','Agotado')");
+            $consultarExistencia = $conexionBD->prepare("SELECT * FROM inventario WHERE producto_id_producto = :producto_id AND estado_inve IN ('Activo','Inactivo')");
             $consultarExistencia->bindParam(':producto_id', $producto_id, PDO::PARAM_INT);
             $consultarExistencia->execute();
 
@@ -77,13 +77,11 @@ class Inventario
 
                 $productoExistente = $consultarExistencia->fetch(PDO::FETCH_ASSOC);
 
-                if ($productoExistente['estado_inve']== 'Agotado') {
-                   throw new Exception("El producto esta agotado y no se generar entrada.");
-                }else {
+                if ($productoExistente['estado_inve'] == 'Inactivo') {
+                    throw new Exception("El producto esta inactivo y no se puede generar una entrada.");
+                } else {
                     throw new Exception("El producto ya existe en el inventario y no se puede agregar nuevamente.");
                 }
-
-                
             }
 
             // configuracion de algunos valores
@@ -122,7 +120,7 @@ class Inventario
             //calculo del iva 
             $iva = $valor_total * 0.19;
 
-            $valor_total_con_iva= $valor_total + $iva;
+            $valor_total_con_iva = $valor_total + $iva;
 
             // Inserción en la tabla inventario
             $sql = "INSERT INTO inventario (tipo_movimiento, existencia_inicial, existencia_actual, fecha, registrado_por, estado_inve, producto_id_producto, usuario_id_usuario, valor_total)
@@ -179,35 +177,35 @@ class Inventario
 
 
             // Insertar la factura en la tabla factura
-            $nro_factura = 'FCT' . str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT); 
+            $nro_recepcion = 'CR' . str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
 
-            $sqlFactura = "INSERT INTO factura (nro_factura, fecha_emision, total_facturado, usuario_id_usuario, inventario_id_inventario)
-                       VALUES (:nro_factura, :fecha_emision, :total_facturado, :usuario_id_usuario, :inventario_id_inventario)";
+            $sqlRecepcion = "INSERT INTO recepcion (nro_recepcion, fecha_emision, total_facturado, usuario_id_usuario, inventario_id_inventario)
+                       VALUES (:nro_recepcion, :fecha_emision, :total_facturado, :usuario_id_usuario, :inventario_id_inventario)";
 
-            $consultaFactura = $conexionBD->prepare($sqlFactura);
-            $consultaFactura->bindParam(':nro_factura', $nro_factura);
-            $consultaFactura->bindParam(':fecha_emision', $fecha);
-            $consultaFactura->bindParam(':total_facturado', $valor_total_con_iva);
-            $consultaFactura->bindParam(':usuario_id_usuario', $usuario_id, PDO::PARAM_INT);
-            $consultaFactura->bindParam(':inventario_id_inventario', $inventario_id, PDO::PARAM_INT);
+            $consultaRecepcion = $conexionBD->prepare($sqlRecepcion);
+            $consultaRecepcion->bindParam(':nro_recepcion', $nro_recepcion);
+            $consultaRecepcion->bindParam(':fecha_emision', $fecha);
+            $consultaRecepcion->bindParam(':total_facturado', $valor_total_con_iva);
+            $consultaRecepcion->bindParam(':usuario_id_usuario', $usuario_id, PDO::PARAM_INT);
+            $consultaRecepcion->bindParam(':inventario_id_inventario', $inventario_id, PDO::PARAM_INT);
 
-            $consultaFactura->execute();
+            $consultaRecepcion->execute();
 
             //obtiene el id de la factura reciente para poder llenar el detalle de la factura
-            $factura_id = $conexionBD->lastInsertId();
-            if (!$factura_id) {
-                throw new Exception("No se pudo obtener el ID de la factura.");
+            $recepcion_id = $conexionBD->lastInsertId();
+            if (!$recepcion_id) {
+                throw new Exception("No se pudo obtener el ID de la recepción.");
             }
 
             //inserta en la tabla detalle factura
-            $sqlDetalleFactura = "INSERT INTO detalle_factura (cantidad,factura_id_factura)
-            VALUES(:cantidad, :factura_id_factura)";
+            $sqlDetalleRecepcion = "INSERT INTO detalle_recepcion (cantidad,recepcion_id_recepcion)
+            VALUES(:cantidad, :recepcion_id_recepcion)";
 
-            $consultaDetalleFactura = $conexionBD->prepare($sqlDetalleFactura);
-            $consultaDetalleFactura->bindParam(':cantidad', $existencia_inicial, PDO::PARAM_INT);
-            $consultaDetalleFactura->bindParam(':factura_id_factura', $factura_id, PDO::PARAM_INT);
+            $consultaDetalleRecepcion = $conexionBD->prepare($sqlDetalleRecepcion);
+            $consultaDetalleRecepcion->bindParam(':cantidad', $existencia_inicial, PDO::PARAM_INT);
+            $consultaDetalleRecepcion->bindParam(':recepcion_id_recepcion', $recepcion_id, PDO::PARAM_INT);
 
-            $consultaDetalleFactura->execute();
+            $consultaDetalleRecepcion->execute();
 
             return true;
         } catch (PDOException $e) {
@@ -354,14 +352,42 @@ class Inventario
 
 
     // Método para verificar productos con existencia baja en el inventario mediante una vista en la bd
+    // public static function verificarExistenciasBajas()
+    // {
+    //     try {
+    //         $conexionBD = self::crearInstancia();
+
+    //         // Cambiar la consulta para seleccionar desde la vista
+    //         $consulta = $conexionBD->prepare("SELECT * FROM vista_notificaciones_baja_existencia");
+
+    //         $consulta->execute();
+
+    //         // Verifica si hay productos con existencias bajas
+    //         $productosConExistenciasBajas = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
+    //         if ($productosConExistenciasBajas) {
+    //             return $productosConExistenciasBajas;
+    //         } else {
+    //             // No hay productos con existencias bajas
+    //             return [];
+    //         }
+    //     } catch (PDOException $e) {
+    //         // Manejo de errores en caso de que ocurra un problema con la consulta
+    //         var_dump("Error al verificar existencias bajas: " . $e->getMessage());
+    //         return [];
+    //     }
+    // }
+
     public static function verificarExistenciasBajas()
     {
         try {
             $conexionBD = self::crearInstancia();
 
-            // Cambiar la consulta para seleccionar desde la vista
-            $consulta = $conexionBD->prepare("SELECT * FROM vista_notificaciones_baja_existencia");
-
+            // Cambiar la consulta para excluir productos con existencia 0
+            $consulta = $conexionBD->prepare("
+            SELECT * FROM vista_notificaciones_baja_existencia 
+            WHERE existencia_actual > 0
+        ");
             $consulta->execute();
 
             // Verifica si hay productos con existencias bajas
@@ -379,6 +405,8 @@ class Inventario
             return [];
         }
     }
+
+
 
     //metodo aumentar la existencia de un producto en el inventario
     public static function aumentarExistencia($inventario_id, $cantidad_aumentar)
@@ -425,7 +453,7 @@ class Inventario
 
             //nuevo valor total 
             $nuevo_valor_total = $nuevo_valor_total_sin_iva + $nuevo_iva_total;
-            
+
 
             // Actualiza la existencia actual y el valor total en la base de datos
             $sqlUpdate = "UPDATE inventario SET existencia_actual = :nueva_existencia_actual, valor_total = :nuevo_valor_total WHERE id_inventario = :inventario_id";
@@ -457,11 +485,11 @@ class Inventario
 
 
             if ($consulta->execute()) {
-                return true; 
+                return true;
             } else {
-                
+
                 var_dump($consulta->errorInfo());
-                return false; 
+                return false;
             }
         } catch (PDOException $e) {
             echo "Error de conexión: " . $e->getMessage();
@@ -469,12 +497,12 @@ class Inventario
         }
     }
 
-    //listar nro factura
-    public static function listarNroFactura()
+    //listar nro recepcion
+    public static function listarNroRecepcion()
     {
         $conexionBD = self::crearInstancia();
 
-        $sql = "SELECT nro_factura FROM factura";
+        $sql = "SELECT nro_recepcion FROM recepcion";
         $consulta = $conexionBD->prepare($sql);
         $consulta->execute();
 

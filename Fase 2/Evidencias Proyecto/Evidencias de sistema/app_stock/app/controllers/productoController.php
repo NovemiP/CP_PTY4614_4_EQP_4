@@ -16,6 +16,9 @@ $fecha_registro_prod = date('Y-m-d'); // Fecha actual en formato 'Y-m-d'
 $proveedor_id = filter_input(INPUT_POST, 'proveedor_id', FILTER_SANITIZE_NUMBER_INT); // obtener id proveedor
 $categoria_id = filter_input(INPUT_POST, 'categoria_id', FILTER_SANITIZE_NUMBER_INT); // obtener id categoria
 $ubicacion_id = filter_input(INPUT_POST, 'ubicacion_id', FILTER_SANITIZE_NUMBER_INT); // obtener id ubicacion
+
+$nro_factura = filter_input(INPUT_POST, 'nro_factura', FILTER_SANITIZE_STRING);
+
 $accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_STRING);
 
 
@@ -29,7 +32,9 @@ if ($accion) {
             if (!empty($nombre_producto) && !empty($proveedor_id) && !empty($categoria_id)) {
                 try {
                    
-                    Producto::agregarProducto($nombre_producto, $unidad_medida, $valor, $fecha_registro_prod, $proveedor_id, $categoria_id, $ubicacion_id);
+
+                    Producto::agregarProducto($nombre_producto, $unidad_medida, $valor, $fecha_registro_prod, $proveedor_id, $categoria_id, $ubicacion_id,$nro_factura);
+
                     $mensaje = 'Producto registrado exitosamente.';
                 } catch (Exception $e) {
                    

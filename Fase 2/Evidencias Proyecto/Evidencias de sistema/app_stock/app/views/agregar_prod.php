@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario']['rol']) || $_SESSION['usuario']['rol'] !== 'Admi
 
 
 include('../../templates/header.php');
-include_once '../models/producto.php'; // Ajusta la ruta según sea necesario
+include_once '../models/producto.php'; 
 include_once '../models/ubicacion.php';
 include('../models/inventario.php');
 
@@ -125,6 +125,7 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
 
                             <!-- Categoría -->
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Categoría</label>
                                 <select class="form-select" id="categoria_id" name="categoria_id" required>
                                     <option value="" disabled selected>Seleccionar Categoría</option>
                                     <?php
@@ -140,7 +141,7 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                             </div>
                             <!-- Proveedor -->
                             <div class="mb-3">
-                                <!-- <label for="proveedor_id" class="form-label">Proveedor</label> -->
+                                <label for="proveedor_id" class="form-label">Proveedor</label> 
                                 <select class="form-select" id="proveedor_id" name="proveedor_id" required>
                                     <option value="" disabled selected>Seleccionar Proveedor</option>
                                     <?php
@@ -157,7 +158,7 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
 
                             <!-- ubicacion -->
                             <div class="mb-3">
-                                <!-- <label for="ubicacion_id" class="form-label">Ubicación</label> -->
+                                <label for="ubicacion_id" class="form-label">Ubicación</label> 
                                 <select class="form-select" id="ubicacion_id" name="ubicacion_id" required>
                                     <option value="" disabled selected>Seleccionar Ubicación</option>
                                     <?php
@@ -174,12 +175,19 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                             
                             <!--unidad de medida del producto-->
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Unidad de medida</label>
                                 <select class="form-select" name="unidad_medida" id="unidad_medida" required>
                                     <option value="" disabled selected>Seleccionar unidad de medida</option>
                                     <option value="Caj.">Caj.</option>
                                     <option value="Und.">Und.</option>
                                 </select>
                             </div>
+
+                            <div class="mb-3">
+                                <label for="nro_factura" class="form-label">Nro Factura</label>
+                                <input type="text" class="form-control" id="nro_factura" name="nro_factura" required>
+                            </div>
+                            
 
             
                             <!-- Nombre del Producto -->

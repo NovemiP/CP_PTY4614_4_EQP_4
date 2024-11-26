@@ -127,7 +127,7 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                             <!-- Producto -->
                             <div class="mb-3">
                                 <select class="form-select" id="salida_id" name="inventario_id" required>
-                                    <option value="" disabled selected>Seleccionar producto</option>
+                                    <option value="" disabled selected>Seleccionar Nro Factura</option>
                                     <?php
                                     $productos = Producto::listarProdConInventario();
                                     foreach ($productos as $producto) {
@@ -136,7 +136,7 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                     data-nombre="' . htmlspecialchars($producto['nombre_producto']) . '" 
                     data-valor="' . htmlspecialchars($producto['valor_unitario']) . '"
                     data-existencia="' . htmlspecialchars($producto['existencia_actual']) . '">'
-                                            . htmlspecialchars($producto['nombre_producto']) .
+                                            . htmlspecialchars($producto['nro_factura']) .' - ' . htmlspecialchars($producto['nombre_producto']) .
                                             '</option>';
                                     }
                                     ?>
@@ -144,24 +144,27 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                             </div>
 
                             <!-- Detalles automáticos del producto -->
-                            <!-- <div class="mb-3">
-                                <input type="text" class="form-control" id="nro_guia" name="nro_guia" placeholder="Nro.guia">
-                            </div> -->
+                           
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Código producto</label>
                                 <input type="text" class="form-control" id="cod_producto" name="cod_producto" placeholder="Código producto" readonly>
                             </div>
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Producto</label>
                                 <input type="text" class="form-control" id="nombre_producto" name="nombre_producto" placeholder="Producto" readonly>
                             </div>
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Valor unitario</label>
                                 <input type="text" class="form-control" id="valor_unitario" name="valor_unitario" placeholder="Valor Unitario" readonly>
                             </div>
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Existencia actual</label>
                                 <input type="text" class="form-control" id="existencia_actual" name="Existencia_actual" placeholder="Existencia" readonly>
                             </div>
 
                             <!-- Cliente -->
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Destino</label>
                                 <select class="form-select" id="cliente_id" name="cliente_id" required>
                                     <option value="" disabled selected>Seleccionar cliente</option>
                                     <?php
@@ -177,10 +180,12 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                             </div>
 
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Dirección destino</label>
                                 <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Destino traslado" readonly>
                             </div>
 
                             <div class="mb-3">
+                                <label for="nombre" class="form-label">Cantidad salida</label>
                                 <input type="number" class="form-control" id="cantidad_salida" name="cantidad_salida" placeholder="Ingresa cantidad de salida" required>
                             </div>
 
