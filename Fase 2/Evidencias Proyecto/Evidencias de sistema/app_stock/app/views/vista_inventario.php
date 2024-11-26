@@ -151,7 +151,7 @@ $totalPaginas = ceil($totalInventarios / $limit);
                                     <th>Existencia actual</th>
                                     <th>Ubicación</th>
                                     <th>Valor unitario</th>
-                                    <th>Iva(19%)</th>
+                                    <th>Iva</th>
                                     <th>Total</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
@@ -192,9 +192,9 @@ $totalPaginas = ceil($totalInventarios / $limit);
 
 
                                             <!-- Botón agregar más -->
-                                            <a href="aumentar_entrada.php?id_inventario=<?php echo urlencode($inventario['id_inventario']); ?>&cod_producto=<?php echo urlencode($inventario['cod_producto']); ?>" class="btn btn-success btn-sm">
+                                            <!-- <a href="aumentar_entrada.php?id_inventario=<?php echo urlencode($inventario['id_inventario']); ?>&cod_producto=<?php echo urlencode($inventario['cod_producto']); ?>" class="btn btn-success btn-sm">
                                                 <i class="ri-add-fill"></i>
-                                            </a>
+                                            </a> -->
 
 
                                             <!--boton cambiar estado-->

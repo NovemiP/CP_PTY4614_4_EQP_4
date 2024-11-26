@@ -136,7 +136,7 @@ $notificacionesExistencias = inventario::verificarExistenciasBajas();
     <!-- Filtro por producto -->
     <form class="row g-3 align-items-end mt-3">
       <div class="col-md-3">
-        <input type="text" id="filtroCodigo" class="form-control" placeholder="Filtrar por código">
+        <input type="text" id="filtroFactura" class="form-control" placeholder="Filtrar por nro factura">
       </div>
       <div class="col-md-3">
         <input type="text" id="filtroProducto" class="form-control" placeholder="Filtrar por producto">
@@ -151,7 +151,8 @@ $notificacionesExistencias = inventario::verificarExistenciasBajas();
             <table id="tabla-inventario" class="table-container table table-bordered">
               <thead class="table table-stripped">
                 <tr class="highlight">
-                  <!-- <th>Id</th> -->
+                 
+                   <th>Nro Factura</th>
                   <th>Código</th>
                   <th>Producto</th>
                   <th>Valor unitario</th>                  
@@ -169,6 +170,9 @@ $notificacionesExistencias = inventario::verificarExistenciasBajas();
                 <?php foreach ($listaProductos as $producto): ?>
                   <tr>
 
+                    <td>
+                      <?= $producto['nro_factura']; ?>
+                    </td>
                     <td>
                       <?= $producto['cod_producto']; ?>
                     </td>

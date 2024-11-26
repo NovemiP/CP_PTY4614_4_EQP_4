@@ -7,12 +7,12 @@ if (!isset($_SESSION['usuario'])) {
     exit();
 }
 
+
+
 include_once '../models/inventario.php';
 include_once '../models/producto.php';
 include_once '../models/usuario.php';
 include_once '../models/ubicacion.php';
-include_once '../models/usuario.php';
-include_once '../models/cliente.php';
 include('../../templates/header.php');
 
 
@@ -20,11 +20,9 @@ include('../../templates/header.php');
 // Obtener productos con existencias bajas
 $notificacionesExistencias = Inventario::verificarExistenciasBajas();
 
-
 ?>
 
-
-<!-- Main Contenido -->
+<!-- MAIN CONTENIDO -->
 <main>
     <div class="p-2">
         <!-- Navbar -->
@@ -85,7 +83,6 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                     </div>
                 </div>
                 <!-- Fin notificaciones -->
-
                 <!-- Usuario -->
                 <div class="dropdown">
                     <div class="d-flex align-items-center cursor-pointer dropdown-toggle" data-bs-toggle="dropdown"
@@ -114,10 +111,10 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
 
 
         <!-- Fin Navbar -->
-        <!--Contenido-->
-        <h3 class="title fw-bold mt-3 mb-0 me-auto">Registrar salida</h3>
+
+        <!-- Contenido -->
+        <h3 class="title fw-bold mt-3 mb-3 me-auto">Registrar entrada</h3>
         <!-- Formulario registro de entrada -->
-         <br>
         <div class="container-fluid">
             <div class="mb-3">
                 <div class="row justify-content-center">
@@ -126,25 +123,35 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                         <form id="form-inventario" class="row form-registro mx-auto" action="../controllers/inventarioController.php" method="POST">
                             <!-- Producto -->
                             <div class="mb-3">
-                                <select class="form-select" id="salida_id" name="inventario_id" required>
+                                 <select class="form-select" id="producto_id" name="producto_id" required>
                                     <option value="" disabled selected>Seleccionar Nro Factura</option>
                                     <?php
-                                    $productos = Producto::listarProdConInventario();
+                                    // Llama a la función que lista los productos desde el modelo
+                                    $productos = Producto::listarProdEntrada();
+
+
                                     foreach ($productos as $producto) {
-                                        echo '<option value="' . htmlspecialchars($producto['id_inventario']) . '" 
-                    data-codigo="' . htmlspecialchars($producto['cod_producto']) . '" 
-                    data-nombre="' . htmlspecialchars($producto['nombre_producto']) . '" 
-                    data-valor="' . htmlspecialchars($producto['valor_unitario']) . '"
-                    data-existencia="' . htmlspecialchars($producto['existencia_actual']) . '">'
-                                            . htmlspecialchars($producto['nro_factura']) .' - ' . htmlspecialchars($producto['nombre_producto']) .
+                                        echo '<option value="' . htmlspecialchars($producto['id_producto']) . '" 
+                        data-proveedor="' . htmlspecialchars($producto['nombre_prove']) . '"
+                        data-codigo="' . htmlspecialchars($producto['cod_producto']) . '" 
+                        data-nombre="' . htmlspecialchars($producto['nombre_producto']) . '" 
+                        data-valor="$' . number_format($producto['valor_unitario'], 0, ',', '.') . '" 
+                        data-ubicacion="' . htmlspecialchars($producto['nombre_zona']) . '">'
+                                            . htmlspecialchars($producto['nro_factura']) . ' - ' . htmlspecialchars($producto['nombre_producto']) .
                                             '</option>';
                                     }
                                     ?>
-                                </select>
+                                </select> 
+                               
                             </div>
 
                             <!-- Detalles automáticos del producto -->
-                           
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Proveedor</label>
+                                <input type="text" class="form-control" id="nombre_prove" name="nombre_prove" placeholder="Proveedor" readonly>
+                            </div>
+
+
                             <div class="mb-3">
                                 <label for="nombre" class="form-label">Código producto</label>
                                 <input type="text" class="form-control" id="cod_producto" name="cod_producto" placeholder="Código producto" readonly>
@@ -158,65 +165,34 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                                 <input type="text" class="form-control" id="valor_unitario" name="valor_unitario" placeholder="Valor Unitario" readonly>
                             </div>
                             <div class="mb-3">
-                                <label for="nombre" class="form-label">Existencia actual</label>
-                                <input type="text" class="form-control" id="existencia_actual" name="Existencia_actual" placeholder="Existencia" readonly>
+                                <label for="nombre" class="form-label">IVA</label>
+                                <input type="text" class="form-control" id="iva" name="iva" placeholder="Iva (19%)" readonly>
                             </div>
 
-                            <!-- Cliente -->
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Destino</label>
-                                <select class="form-select" id="cliente_id" name="cliente_id" required>
-                                    <option value="" disabled selected>Seleccionar cliente</option>
-                                    <?php
-                                    $clientes = Cliente::listarClienteSalida();
-                                    foreach ($clientes as $cliente) {
-                                        echo '<option value="' . htmlspecialchars($cliente['id_cliente']) . '" 
-                    data-direccion="' . htmlspecialchars($cliente['direccion']) . '" >'
-                                            . htmlspecialchars($cliente['nombre']) .
-                                            '</option>';
-                                    }
-                                    ?>
-                                </select>
-                            </div>
 
                             <div class="mb-3">
-                                <label for="nombre" class="form-label">Dirección destino</label>
-                                <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Destino traslado" readonly>
+                                <label for="nombre" class="form-label">Cantidad</label>
+                                <input type="number" class="form-control" id="existencia_inicial" name="existencia_inicial" placeholder="Ingresar cantidad" required>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Cantidad salida</label>
-                                <input type="number" class="form-control" id="cantidad_salida" name="cantidad_salida" placeholder="Ingresa cantidad de salida" required>
-                            </div>
 
-                            <!-- Campo oculto para manejar la acción -->
-                            <input type="hidden" name="accion" value="registrarSalida">
+
+                            <!-- Campos ocultos para manejar la acción -->
+                            <input type="hidden" name="accion" value="agregarEntrada">
 
                             <div class="col-md-12 text-center">
                                 <button type="submit" class="btn btn-md btn-success">Registrar</button>&nbsp;
-                                <a href="vista_salidas.php" class="btn btn-md btn-success">Cerrar</a>
+                                <a href="vista_entradas.php" class="btn btn-md btn-success">Cerrar</a>
                             </div>
                         </form>
-
 
                     </div>
                 </div>
             </div>
         </div>
-
-
-        <!--fin del contenido-->
     </div>
 </main>
-<!-- Fin Main Contenido-->
+<!-- FIN MAIN CONTENIDO -->
 
 
-
-
-
-
-
-
-
-<?php include('../../templates/footer.php');
-?>
+<?php include('../../templates/footer.php'); ?>

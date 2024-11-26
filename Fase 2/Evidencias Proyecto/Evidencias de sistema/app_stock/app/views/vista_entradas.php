@@ -128,18 +128,18 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
             </div>
         </div>
         <div class="col-auto d-flex gap-2 align-items-center">
-            <form action="../libs/factura.php" method="GET" class="d-flex">
+            <form action="../libs/recepcion.php" method="GET" class="d-flex">
 
-                <select class="form-select  me-2 mb-2" name="nro_factura" id="nro_factura" style="width: 200px;">
-                    <option value="" disabled selected> Nro factura</option>
+                <select class="form-select  me-2 mb-2" name="nro_recepcion" id="nro_recepcion" style="width: 200px;">
+                    <option value="" disabled selected> Nro Recepción</option>
                     <?php
-                    $num_factura = Inventario::listarNroFactura();
-                    foreach ($num_factura as $factura) {
-                        echo "<option value='" . $factura['nro_factura'] . "'>" . $factura['nro_factura'] . "</option>";
+                    $num_recepcion = Inventario::listarNroRecepcion();
+                    foreach ($num_recepcion as $recepcion) {
+                        echo "<option value='" . $recepcion['nro_recepcion'] . "'>" . $recepcion['nro_recepcion'] . "</option>";
                     }
                     ?>
                 </select>
-                <button type="submit" class="btn btn-success mb-2 btn-sm">Generar factura</button>
+                <button type="submit" class="btn btn-success mb-2 btn-sm">Generar Comprobante</button>
             </form>
         </div>
 
@@ -151,7 +151,7 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                 <input type="text" id="filtroCodigo" class="form-control" placeholder="Filtrar por código producto">
             </div>
             <div class="col-md-3">
-                <input type="text" id="filtroFactura" class="form-control" placeholder="Filtrar por nro factura">
+                <input type="text" id="filtroRecepcion" class="form-control" placeholder="Filtrar por nro recepción">
             </div>
         </form>
 
@@ -164,8 +164,9 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                         <table id="tabla-inventario" class="table-container table table-bordered">
                             <thead class="table table-stripped">
                                 <tr class="highlight">
-                                    <th>Nro. factura</th>
+                                    <th>Nro. Recepción</th>
                                     <th>Código prod</th>
+                                    <th>Producto</th>
                                     <th>Proveedor</th>
                                     <th>Cantidad</th>
                                     <th>Valor unitario</th>
@@ -178,8 +179,9 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                             <tbody>
                                 <?php foreach ($listaInventarios as $inventario): ?>
                                     <tr>
-                                        <td><?php echo htmlspecialchars($inventario['nro_factura']); ?></td>
+                                        <td><?php echo htmlspecialchars($inventario['nro_recepcion']); ?></td>
                                         <td><?php echo htmlspecialchars($inventario['cod_producto']); ?></td>
+                                        <td><?php echo htmlspecialchars($inventario['nombre_producto']); ?></td>
                                         <td><?php echo htmlspecialchars($inventario['nombre_prove']); ?></td>
                                         <td>
                                             <?php

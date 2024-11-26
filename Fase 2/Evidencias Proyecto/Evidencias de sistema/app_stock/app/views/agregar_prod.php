@@ -1,30 +1,27 @@
 <?php
 session_start();
 
-// Verificar si hay una sesión activa
-if (!isset($_SESSION['usuario'])) {
+// Verificar si hay una sesión activa y si el rol es "Administrador"
+if (!isset($_SESSION['usuario']['rol']) || $_SESSION['usuario']['rol'] !== 'Administrador') {
     header('Location: ../views/login.php'); // Redirigir a la página de inicio de sesión
     exit();
 }
 
-include_once '../models/inventario.php';
-include_once '../models/producto.php';
-include_once '../models/usuario.php';
-include_once '../models/ubicacion.php';
-include_once '../models/usuario.php';
-include_once '../models/cliente.php';
-include('../../templates/header.php');
 
+include('../../templates/header.php');
+include_once '../models/producto.php'; // Ajusta la ruta según sea necesario
+include_once '../models/ubicacion.php';
+include('../models/inventario.php');
 
 
 // Obtener productos con existencias bajas
 $notificacionesExistencias = Inventario::verificarExistenciasBajas();
 
 
+
 ?>
 
-
-<!-- Main Contenido -->
+<!-- MAIN CONTENIDO -->
 <main>
     <div class="p-2">
         <!-- Navbar -->
@@ -114,109 +111,119 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
 
 
         <!-- Fin Navbar -->
-        <!--Contenido-->
-        <h3 class="title fw-bold mt-3 mb-0 me-auto">Registrar salida</h3>
-        <!-- Formulario registro de entrada -->
-         <br>
+
+        <!-- Contenido -->
+        <h3 class="title fw-bold mt-3 mb-3 me-auto">Registro de productos</h3>
+        <!-- Formulario de registro de producto -->
         <div class="container-fluid">
             <div class="mb-3">
                 <div class="row justify-content-center">
                     <div class="col-12 col-md-4">
+                        <form class="row form-registro mx-auto" action="../controllers/productoController.php" method="POST" enctype="multipart/form-data">
 
-                        <form id="form-inventario" class="row form-registro mx-auto" action="../controllers/inventarioController.php" method="POST">
-                            <!-- Producto -->
+
+
+                            <!-- Categoría -->
                             <div class="mb-3">
-                                <select class="form-select" id="salida_id" name="inventario_id" required>
-                                    <option value="" disabled selected>Seleccionar Nro Factura</option>
+                                <label for="nombre" class="form-label">Categoría</label>
+                                <select class="form-select" id="categoria_id" name="categoria_id" required>
+                                    <option value="" disabled selected>Seleccionar Categoría</option>
                                     <?php
-                                    $productos = Producto::listarProdConInventario();
-                                    foreach ($productos as $producto) {
-                                        echo '<option value="' . htmlspecialchars($producto['id_inventario']) . '" 
-                    data-codigo="' . htmlspecialchars($producto['cod_producto']) . '" 
-                    data-nombre="' . htmlspecialchars($producto['nombre_producto']) . '" 
-                    data-valor="' . htmlspecialchars($producto['valor_unitario']) . '"
-                    data-existencia="' . htmlspecialchars($producto['existencia_actual']) . '">'
-                                            . htmlspecialchars($producto['nro_factura']) .' - ' . htmlspecialchars($producto['nombre_producto']) .
-                                            '</option>';
+                                    // Llama a la función que contiene lista de categorías desde el modelo
+                                    $categorias = Producto::listarCategorias();
+                                    foreach ($categorias as $categoria) {
+                                        // Asegurarse de que no se impriman etiquetas HTML
+                                        $nombreCategoriaLimpio = strip_tags($categoria['nombre_categoria']);
+                                        echo '<option value="' . htmlspecialchars($categoria['id_categoria']) . '">' . htmlspecialchars($nombreCategoriaLimpio) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <!-- Proveedor -->
+                            <div class="mb-3">
+                                <label for="proveedor_id" class="form-label">Proveedor</label> 
+                                <select class="form-select" id="proveedor_id" name="proveedor_id" required>
+                                    <option value="" disabled selected>Seleccionar Proveedor</option>
+                                    <?php
+                                    // Llama a la función que contiene lista proveedores desde el modelo
+                                    $proveedores = Producto::listarProveedores();
+                                    foreach ($proveedores as $proveedor) {
+                                        // Asegurarse de que no se impriman etiquetas HTML
+                                        $nombreProveedorLimpio = strip_tags($proveedor['nombre_prove']);
+                                        echo '<option value="' . htmlspecialchars($proveedor['id_proveedor']) . '">' . htmlspecialchars($nombreProveedorLimpio) . '</option>';
                                     }
                                     ?>
                                 </select>
                             </div>
 
-                            <!-- Detalles automáticos del producto -->
-                           
+                            <!-- ubicacion -->
                             <div class="mb-3">
-                                <label for="nombre" class="form-label">Código producto</label>
-                                <input type="text" class="form-control" id="cod_producto" name="cod_producto" placeholder="Código producto" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Producto</label>
-                                <input type="text" class="form-control" id="nombre_producto" name="nombre_producto" placeholder="Producto" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Valor unitario</label>
-                                <input type="text" class="form-control" id="valor_unitario" name="valor_unitario" placeholder="Valor Unitario" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Existencia actual</label>
-                                <input type="text" class="form-control" id="existencia_actual" name="Existencia_actual" placeholder="Existencia" readonly>
-                            </div>
-
-                            <!-- Cliente -->
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Destino</label>
-                                <select class="form-select" id="cliente_id" name="cliente_id" required>
-                                    <option value="" disabled selected>Seleccionar cliente</option>
+                                <label for="ubicacion_id" class="form-label">Ubicación</label> 
+                                <select class="form-select" id="ubicacion_id" name="ubicacion_id" required>
+                                    <option value="" disabled selected>Seleccionar Ubicación</option>
                                     <?php
-                                    $clientes = Cliente::listarClienteSalida();
-                                    foreach ($clientes as $cliente) {
-                                        echo '<option value="' . htmlspecialchars($cliente['id_cliente']) . '" 
-                    data-direccion="' . htmlspecialchars($cliente['direccion']) . '" >'
-                                            . htmlspecialchars($cliente['nombre']) .
-                                            '</option>';
+                                    // Llama a la función que contiene lista los ubicaciones desde el modelo
+                                    $ubicaciones = Ubicacion::listarUbicaciones();
+                                    foreach ($ubicaciones as $ubicacion) {
+                                        // Asegurarse de que no se impriman etiquetas HTML
+                                        $nombreUbicacionLimpio = strip_tags($ubicacion['nombre_zona']);
+                                        echo '<option value="' . htmlspecialchars($ubicacion['id_ubicacion']) . '">' . htmlspecialchars($nombreUbicacionLimpio) . '</option>';
                                     }
                                     ?>
                                 </select>
                             </div>
-
+                            
+                            <!--unidad de medida del producto-->
                             <div class="mb-3">
-                                <label for="nombre" class="form-label">Dirección destino</label>
-                                <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Destino traslado" readonly>
+                                <label for="nombre" class="form-label">Unidad de medida</label>
+                                <select class="form-select" name="unidad_medida" id="unidad_medida" required>
+                                    <option value="" disabled selected>Seleccionar unidad de medida</option>
+                                    <option value="Caj.">Caj.</option>
+                                    <option value="Und.">Und.</option>
+                                </select>
                             </div>
 
                             <div class="mb-3">
-                                <label for="nombre" class="form-label">Cantidad salida</label>
-                                <input type="number" class="form-control" id="cantidad_salida" name="cantidad_salida" placeholder="Ingresa cantidad de salida" required>
+                                <label for="nro_factura" class="form-label">Nro Factura</label>
+                                <input type="text" class="form-control" id="nro_factura" name="nro_factura" required>
+                            </div>
+                            
+
+            
+                            <!-- Nombre del Producto -->
+                            <div class="mb-3">
+                                <label for="nombre_producto" class="form-label">Nombre del Producto</label>
+                                <input type="text" class="form-control" id="nombre_producto" name="nombre_producto" required>
+                            </div>
+                            
+
+                            <!--valor del producto-->
+                            <div class="mb-3">
+                                    <label for="valor_unitario" class="form-label">Valor unitario</label>
+                                    <input type="text" class="form-control" id="valor_unitario" name="valor_unitario" required>
                             </div>
 
-                            <!-- Campo oculto para manejar la acción -->
-                            <input type="hidden" name="accion" value="registrarSalida">
+
+                        
+                            <!-- Botones de acción -->
+                            <input type="hidden" name="accion" value="agregar">
 
                             <div class="col-md-12 text-center">
-                                <button type="submit" class="btn btn-md btn-success">Registrar</button>&nbsp;
-                                <a href="vista_salidas.php" class="btn btn-md btn-success">Cerrar</a>
+                                <button type="submit" class="btn btn-md btn-success">Ingresar</button>&nbsp;
+                                <a href="vista_productos.php" class="btn btn-md btn-success">Cerrar</a>
                             </div>
-                        </form>
 
+
+
+                        </form>
 
                     </div>
                 </div>
             </div>
         </div>
-
-
-        <!--fin del contenido-->
     </div>
 </main>
-<!-- Fin Main Contenido-->
+<!-- FIN MAIN CONTENIDO -->
 
 
-
-
-
-
-
-
-
-<?php include('../../templates/footer.php');
-?>
+<?php include('../../templates/footer.php'); ?>
