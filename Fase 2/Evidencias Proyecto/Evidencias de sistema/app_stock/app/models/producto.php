@@ -19,6 +19,7 @@ class Producto
     public $proveedor_id;
     public $categoria_id;
     public $ubicacion_id;
+    public $nro_factura;
 
     public static function crearInstancia()
     {
@@ -44,7 +45,7 @@ class Producto
             $consulta->bindParam(':limit', $limit, PDO::PARAM_INT);
             $consulta->bindParam(':offset', $offset, PDO::PARAM_INT);
             $consulta->execute();
-            
+
             return $consulta->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             echo "Error al listar productos: " . $e->getMessage();
@@ -53,7 +54,7 @@ class Producto
     }
 
 
-    //listrar productos para entrada
+    //listrar productos para entrada por numero de factura
     public static function listarProdEntrada()
     {
         try {
@@ -70,13 +71,59 @@ class Producto
 
             $consulta = $conexionBD->prepare($sql);
             $consulta->execute();
-            
+
             return $consulta->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
-            echo "Error al listar productos: " . $e->getMessage();
+            echo "Error al listar productos por factura: " . $e->getMessage();
             return [];
         }
     }
+    
+    
+    // public static function listarProdEntrada($nro_factura = null)
+    // {
+    //     try {
+    //         $conexionBD = self::crearInstancia();
+
+    //         // Si se pasa el número de factura, se filtra en la consulta
+    //         if ($nro_factura) {
+    //             $sql = "SELECT producto.*, 
+    //                     proveedor.nombre_prove, 
+    //                     categoria.nombre_categoria, 
+    //                     ubicacion.nombre_zona 
+    //                 FROM producto
+    //                 LEFT JOIN proveedor ON producto.proveedor_id_proveedor = proveedor.id_proveedor
+    //                 LEFT JOIN categoria ON producto.categoria_id_categoria = categoria.id_categoria
+    //                 LEFT JOIN ubicacion ON producto.ubicacion_id_ubicacion = ubicacion.id_ubicacion
+    //                 WHERE producto.nro_factura = :nro_factura";
+    //         } else {
+    //             // Si no se pasa el número de factura, se listan todos los productos
+    //             $sql = "SELECT producto.*, 
+    //                     proveedor.nombre_prove, 
+    //                     categoria.nombre_categoria, 
+    //                     ubicacion.nombre_zona 
+    //                 FROM producto
+    //                 LEFT JOIN proveedor ON producto.proveedor_id_proveedor = proveedor.id_proveedor
+    //                 LEFT JOIN categoria ON producto.categoria_id_categoria = categoria.id_categoria
+    //                 LEFT JOIN ubicacion ON producto.ubicacion_id_ubicacion = ubicacion.id_ubicacion";
+    //         }
+
+    //         $consulta = $conexionBD->prepare($sql);
+
+    //         // Si se pasa el número de factura, se vincula a la consulta
+    //         if ($nro_factura) {
+    //             $consulta->bindParam(':nro_factura', $nro_factura, PDO::PARAM_STR);
+    //         }
+
+    //         $consulta->execute();
+
+    //         return $consulta->fetchAll(PDO::FETCH_ASSOC);
+    //     } catch (Exception $e) {
+    //         echo "Error al listar productos por factura: " . $e->getMessage();
+    //         return [];
+    //     }
+    // }
+
 
     //listar productos con inventario para generar salida
     public static function listarProdConInventario()
@@ -86,6 +133,7 @@ class Producto
         $consulta = $conexionBD->prepare("
         SELECT DISTINCT inventario.id_inventario, 
                         producto.id_producto, 
+                        producto.nro_factura,
                         producto.cod_producto, 
                         producto.nombre_producto, 
                         producto.valor_unitario, 
@@ -152,33 +200,33 @@ class Producto
 
 
     #metodo para agregar productos
-    public static function agregarProducto($nombre_producto, $unidad_medida, $valor, $fecha_registro_prod, $proveedor_id, $categoria_id, $ubicacion_id)
+    public static function agregarProducto($nombre_producto, $unidad_medida, $valor, $fecha_registro_prod, $proveedor_id, $categoria_id, $ubicacion_id, $nro_factura)
     {
         try {
             $conexionBD = self::crearInstancia();
 
-            
+
             //verifica el estado del proveedor 
             $consultaProveedor = $conexionBD->prepare("SELECT estado FROM proveedor WHERE id_proveedor = :proveedor_id");
-            $consultaProveedor->bindParam(':proveedor_id', $proveedor_id,PDO::PARAM_INT);
+            $consultaProveedor->bindParam(':proveedor_id', $proveedor_id, PDO::PARAM_INT);
             $consultaProveedor->execute();
             $proveedor = $consultaProveedor->fetch(PDO::FETCH_ASSOC);
 
             //si el proveedor no se encuenta en estado activo se lanza una excepcion
-            if (!$proveedor || $proveedor['estado']!== 'Activo') {
-                throw new Exception("El proveedor no esta activo, no se puede registrar el producto.");
+            if (!$proveedor || $proveedor['estado'] !== 'Activo') {
+                throw new Exception("No se puede registrar el producto, porque el proveedor asociado se encuentra inactivo.");
             }
 
 
-        
+
 
             //genera el codigo del producto
             $codigo = 'PD-' . substr(md5(uniqid()), 0, 5);
             //estado del producto por defecto
             $estado = 'Activo';
 
-            $sql = "INSERT INTO producto (cod_producto,nombre_producto,unidad_medida, valor_unitario,estado, fecha_registro_prod,proveedor_id_proveedor, categoria_id_categoria, ubicacion_id_ubicacion)
-                    VALUES (:cod_producto,:nombre_producto, :unidad_medida, :valor_unitario, :estado, :fecha_registro_prod, :proveedor_id, :categoria_id, :ubicacion_id)";
+            $sql = "INSERT INTO producto (cod_producto,nombre_producto,unidad_medida, valor_unitario,estado, fecha_registro_prod,proveedor_id_proveedor, categoria_id_categoria, ubicacion_id_ubicacion,nro_factura)
+                    VALUES (:cod_producto,:nombre_producto, :unidad_medida, :valor_unitario, :estado, :fecha_registro_prod, :proveedor_id, :categoria_id, :ubicacion_id, :nro_factura)";
             $consulta = $conexionBD->prepare($sql);
             $consulta->bindParam(':cod_producto', $codigo);
             $consulta->bindParam(':nombre_producto', $nombre_producto);
@@ -189,11 +237,12 @@ class Producto
             $consulta->bindParam(':proveedor_id', $proveedor_id);
             $consulta->bindParam(':categoria_id', $categoria_id);
             $consulta->bindParam(':ubicacion_id', $ubicacion_id);
-            $consulta->execute(); 
-            return true; 
+            $consulta->bindParam(':nro_factura', $nro_factura);
+            $consulta->execute();
+            return true;
         } catch (PDOException $e) {
-            echo "Error de conexión: " . $e->getMessage(); 
-            return false; 
+            echo "Error de conexión: " . $e->getMessage();
+            return false;
         }
     }
 
@@ -286,34 +335,6 @@ class Producto
             return $total; //retornar el total de productos
         } catch (PDOException $e) {
             echo "Error al contrar productos: " . $e->getMessage();
-            return false;
-        }
-    }
-
-
-
-
-    //metodo para cambiar el estado de un producto
-    public static function cambiarEstadoProducto($id, $nuevoEstado)
-    {
-        try {
-            $conexionBD = self::crearInstancia();
-            $sql = "UPDATE producto SET estado = :estado WHERE id_producto = :id";
-            $consulta = $conexionBD->prepare($sql);
-            $consulta->bindParam(':estado', $nuevoEstado);
-            $consulta->bindParam(':id', $id);
-
-
-
-            if ($consulta->execute()) {
-                return true; // Estado cambiado
-            } else {
-                // Imprimir información de error
-                var_dump($consulta->errorInfo());
-                return false; // No se pudo cambiar el estado
-            }
-        } catch (PDOException $e) {
-            echo "Error de conexión: " . $e->getMessage();
             return false;
         }
     }

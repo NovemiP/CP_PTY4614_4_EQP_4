@@ -26,9 +26,9 @@ class Salida
                 producto.nombre_producto,
                 cliente.nombre,
                 cliente.direccion,
-                (SELECT nro_guia FROM guia_traslado 
-                    WHERE guia_traslado.inventario_id_inventario = inventario.id_inventario 
-                    ORDER BY guia_traslado.nro_guia DESC LIMIT 1) AS nro_guia
+                (SELECT nro_guia FROM guia_salida 
+                    WHERE guia_salida.inventario_id_inventario = inventario.id_inventario 
+                    ORDER BY guia_salida.nro_guia DESC LIMIT 1) AS nro_guia
             FROM salida 
             LEFT JOIN inventario ON salida.inventario_id_inventario = inventario.id_inventario 
             LEFT JOIN producto ON inventario.producto_id_producto = producto.id_producto
@@ -76,7 +76,7 @@ class Salida
             }
 
             if ($inventario['estado_inve'] !== 'Activo') {
-                throw new Exception("Inventario de producto agotado.");
+                throw new Exception("Inventario de producto Inactivo.");
             }
 
             $usuario_id = $inventario['usuario_id_usuario'];
@@ -90,8 +90,10 @@ class Salida
                 throw new Exception("No hay suficiente existencia para registrar la salida.");
             }
 
-            $valor_unitario = $inventario['valor_unitario'];
-            $valor_total = $existencia_actual * $valor_unitario;
+            //calculo de iva y valor total luego de registrar una salida
+            $iva = 0.19;
+            $valor_unitario_con_iva = $inventario['valor_unitario'] * (1 +$iva);
+            $valor_total = $existencia_actual * $valor_unitario_con_iva;
 
             // Insertar el registro en la tabla `salida`
             $sqlSalida = "INSERT INTO salida (tipo_movimiento, cantidad_salida, fecha_salida, registrado_por, inventario_id_inventario, cliente_id_cliente)
@@ -146,7 +148,7 @@ class Salida
             $nro_guia = 'GT' . str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT); // Ejemplo: GT000001
 
             // Insertar la guía en la tabla `guia_traslado`
-            $sqlGuia = "INSERT INTO guia_traslado (nro_guia, fecha_emision, destino, cliente_id_cliente, usuario_id_usuario, inventario_id_inventario)
+            $sqlGuia = "INSERT INTO guia_salida (nro_guia, fecha_emision, destino, cliente_id_cliente, usuario_id_usuario, inventario_id_inventario)
                     VALUES (:nro_guia, :fecha_emision, :destino, :cliente_id, :usuario_id, :inventario_id)";
             $consultaGuia = $conexionBD->prepare($sqlGuia);
             $consultaGuia->bindParam(':nro_guia', $nro_guia);
@@ -165,12 +167,12 @@ class Salida
             }
 
             //inserta en la tabla detalle factura
-            $sqlDetalleGuia = "INSERT INTO detalle_guia (cantidad,guia_traslado_id_guia_traslado)
-            VALUES(:cantidad, :guia_traslado_id_guia_traslado)";
+            $sqlDetalleGuia = "INSERT INTO detalle_guia (cantidad,guia_salida_id_guia_salida)
+            VALUES(:cantidad, :guia_salida_id_guia_salida)";
 
             $consultaDetalleGuia = $conexionBD->prepare($sqlDetalleGuia);
             $consultaDetalleGuia->bindParam(':cantidad', $cantidad_salida, PDO::PARAM_INT);
-            $consultaDetalleGuia->bindParam(':guia_traslado_id_guia_traslado', $guia_id, PDO::PARAM_INT);
+            $consultaDetalleGuia->bindParam(':guia_salida_id_guia_salida', $guia_id, PDO::PARAM_INT);
 
             $consultaDetalleGuia->execute();
 
@@ -185,7 +187,7 @@ class Salida
     public static function listarNroGuia(){
         $conexionBD = self::crearInstancia();
 
-        $sql = "SELECT nro_guia FROM guia_traslado";
+        $sql = "SELECT nro_guia FROM guia_salida";
         $consulta = $conexionBD->prepare($sql);
         $consulta->execute();
 
