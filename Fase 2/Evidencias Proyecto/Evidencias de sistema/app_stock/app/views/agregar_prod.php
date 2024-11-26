@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario']['rol']) || $_SESSION['usuario']['rol'] !== 'Admi
 
 
 include('../../templates/header.php');
-include_once '../models/producto.php'; // Ajusta la ruta según sea necesario
+include_once '../models/producto.php'; 
 include_once '../models/ubicacion.php';
 include('../models/inventario.php');
 
