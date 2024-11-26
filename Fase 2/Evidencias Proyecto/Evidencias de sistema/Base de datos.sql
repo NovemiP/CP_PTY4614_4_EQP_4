@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-11-2024 a las 21:01:09
+-- Tiempo de generación: 22-11-2024 a las 00:45:50
 -- Versión del servidor: 11.5.2-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -104,76 +104,49 @@ INSERT INTO `cliente` (`id_cliente`, `nombre`, `direccion`, `telefono`, `correo`
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `detalle_factura`
---
-
-CREATE TABLE `detalle_factura` (
-  `id_detalle_factura` int(11) NOT NULL,
-  `cantidad` int(11) NOT NULL,
-  `factura_id_factura` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `detalle_factura`
---
-
-INSERT INTO `detalle_factura` (`id_detalle_factura`, `cantidad`, `factura_id_factura`) VALUES
-(53, 50, 145),
-(54, 50, 146),
-(55, 20, 147);
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `detalle_guia`
 --
 
 CREATE TABLE `detalle_guia` (
   `id_detalle_guia` int(11) NOT NULL,
   `cantidad` int(11) NOT NULL,
-  `guia_traslado_id_guia_traslado` int(11) NOT NULL
+  `guia_salida_id_guia_salida` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `detalle_guia`
 --
 
-INSERT INTO `detalle_guia` (`id_detalle_guia`, `cantidad`, `guia_traslado_id_guia_traslado`) VALUES
-(37, 40, 88),
-(38, 15, 89);
+INSERT INTO `detalle_guia` (`id_detalle_guia`, `cantidad`, `guia_salida_id_guia_salida`) VALUES
+(53, 10, 104);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `factura`
+-- Estructura de tabla para la tabla `detalle_recepcion`
 --
 
-CREATE TABLE `factura` (
-  `id_factura` int(11) NOT NULL,
-  `nro_factura` varchar(50) NOT NULL,
-  `fecha_emision` date NOT NULL,
-  `total_facturado` decimal(15,2) NOT NULL,
-  `usuario_id_usuario` int(11) NOT NULL,
-  `inventario_id_inventario` int(11) NOT NULL
+CREATE TABLE `detalle_recepcion` (
+  `id_detalle_recepcion` int(11) NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `recepcion_id_recepcion` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `factura`
+-- Volcado de datos para la tabla `detalle_recepcion`
 --
 
-INSERT INTO `factura` (`id_factura`, `nro_factura`, `fecha_emision`, `total_facturado`, `usuario_id_usuario`, `inventario_id_inventario`) VALUES
-(145, 'FCT113599', '2024-11-16', 56525000.00, 26, 349),
-(146, 'FCT818476', '2024-11-16', 35700000.00, 26, 350),
-(147, 'FCT317303', '2024-11-16', 1523200.00, 26, 351);
+INSERT INTO `detalle_recepcion` (`id_detalle_recepcion`, `cantidad`, `recepcion_id_recepcion`) VALUES
+(79, 20, 171);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `guia_traslado`
+-- Estructura de tabla para la tabla `guia_salida`
 --
 
-CREATE TABLE `guia_traslado` (
-  `id_guia_traslado` int(11) NOT NULL,
+CREATE TABLE `guia_salida` (
+  `id_guia_salida` int(11) NOT NULL,
   `nro_guia` varchar(50) NOT NULL,
   `fecha_emision` date NOT NULL,
   `destino` varchar(255) NOT NULL,
@@ -183,12 +156,11 @@ CREATE TABLE `guia_traslado` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `guia_traslado`
+-- Volcado de datos para la tabla `guia_salida`
 --
 
-INSERT INTO `guia_traslado` (`id_guia_traslado`, `nro_guia`, `fecha_emision`, `destino`, `cliente_id_cliente`, `usuario_id_usuario`, `inventario_id_inventario`) VALUES
-(88, 'GT718652', '2024-11-16', 'Calle de la Tecnología 123, Local 10', 19, 26, 349),
-(89, 'GT944637', '2024-11-16', 'Calle de la Obra 14, Local 7', 21, 26, 351);
+INSERT INTO `guia_salida` (`id_guia_salida`, `nro_guia`, `fecha_emision`, `destino`, `cliente_id_cliente`, `usuario_id_usuario`, `inventario_id_inventario`) VALUES
+(104, 'GT713631', '2024-11-22', 'Calle de la Tecnología 123, Local 10', 19, 1, 376);
 
 -- --------------------------------------------------------
 
@@ -214,9 +186,7 @@ CREATE TABLE `inventario` (
 --
 
 INSERT INTO `inventario` (`id_inventario`, `tipo_movimiento`, `fecha`, `estado_inve`, `producto_id_producto`, `usuario_id_usuario`, `existencia_inicial`, `existencia_actual`, `registrado_por`, `valor_total`) VALUES
-(349, 'Entrada', '2024-11-16', 'Activo', 72, 26, 50, 10, 'Alan Navarrete', 9500000.00),
-(350, 'Entrada', '2024-11-16', 'Activo', 75, 26, 50, 50, 'Alan Navarrete', 35700000.00),
-(351, 'Entrada', '2024-11-16', 'Activo', 74, 26, 20, 5, 'Alan Navarrete', 320000.00);
+(376, 'Entrada', '2024-11-22', 'Activo', 77, 1, 20, 10, 'admin stock', 11305000.00);
 
 -- --------------------------------------------------------
 
@@ -239,11 +209,8 @@ CREATE TABLE `movimiento` (
 --
 
 INSERT INTO `movimiento` (`id_movimiento`, `movimiento`, `fecha_movimiento`, `inventario_id_inventario`, `usuario_id_usuario`, `cliente_id_cliente`, `salida_id_salida`) VALUES
-(286, 'Entrada', '2024-11-16', 349, 26, NULL, NULL),
-(287, 'Entrada', '2024-11-16', 350, 26, NULL, NULL),
-(288, 'Salida', '2024-11-16', 349, 26, 19, 162),
-(289, 'Entrada', '2024-11-16', 351, 26, NULL, NULL),
-(290, 'Salida', '2024-11-16', 351, 26, 21, 163);
+(329, 'Entrada', '2024-11-22', 376, 1, NULL, NULL),
+(330, 'Salida', '2024-11-22', 376, 1, 19, 178);
 
 -- --------------------------------------------------------
 
@@ -261,18 +228,17 @@ CREATE TABLE `producto` (
   `fecha_registro_prod` date NOT NULL,
   `categoria_id_categoria` int(11) NOT NULL,
   `ubicacion_id_ubicacion` int(11) NOT NULL,
-  `proveedor_id_proveedor` int(11) NOT NULL
+  `proveedor_id_proveedor` int(11) NOT NULL,
+  `nro_factura` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `producto`
 --
 
-INSERT INTO `producto` (`id_producto`, `cod_producto`, `nombre_producto`, `unidad_medida`, `valor_unitario`, `estado`, `fecha_registro_prod`, `categoria_id_categoria`, `ubicacion_id_ubicacion`, `proveedor_id_proveedor`) VALUES
-(72, 'PD-ea919', 'Iphone 16', 'Und.', 950000.00, 'Activo', '2024-11-16', 21, 1, 21),
-(73, 'PD-a857e', 'Coca-cola', 'Caj.', 15000.00, 'Activo', '2024-11-16', 23, 2, 22),
-(74, 'PD-72aaa', 'Taladro black', '', 64000.00, 'Activo', '2024-11-16', 21, 1, 21),
-(75, 'PD-82f2d', 'Ipad pro', 'Und.', 600000.00, 'Activo', '2024-11-16', 21, 1, 21);
+INSERT INTO `producto` (`id_producto`, `cod_producto`, `nombre_producto`, `unidad_medida`, `valor_unitario`, `estado`, `fecha_registro_prod`, `categoria_id_categoria`, `ubicacion_id_ubicacion`, `proveedor_id_proveedor`, `nro_factura`) VALUES
+(77, 'PD-1db5c', 'Iphone 16', 'Und.', 950000.00, 'Activo', '2024-11-21', 21, 1, 21, '001'),
+(78, 'PD-2e08d', 'taladro', 'Und.', 50000.00, 'Activo', '2024-11-21', 24, 3, 23, '002');
 
 -- --------------------------------------------------------
 
@@ -303,6 +269,28 @@ INSERT INTO `proveedor` (`id_proveedor`, `nombre_prove`, `direccion`, `telefono`
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `recepcion`
+--
+
+CREATE TABLE `recepcion` (
+  `id_recepcion` int(11) NOT NULL,
+  `nro_recepcion` varchar(50) NOT NULL,
+  `fecha_emision` date NOT NULL,
+  `total_facturado` decimal(15,2) NOT NULL,
+  `usuario_id_usuario` int(11) NOT NULL,
+  `inventario_id_inventario` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `recepcion`
+--
+
+INSERT INTO `recepcion` (`id_recepcion`, `nro_recepcion`, `fecha_emision`, `total_facturado`, `usuario_id_usuario`, `inventario_id_inventario`) VALUES
+(171, 'CR489743', '2024-11-22', 22610000.00, 1, 376);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `salida`
 --
 
@@ -321,8 +309,7 @@ CREATE TABLE `salida` (
 --
 
 INSERT INTO `salida` (`id_salida`, `tipo_movimiento`, `cantidad_salida`, `fecha_salida`, `registrado_por`, `inventario_id_inventario`, `cliente_id_cliente`) VALUES
-(162, 'Salida', 40, '2024-11-16 00:00:00', 'Alan Navarrete', 349, 19),
-(163, 'Salida', 15, '2024-11-16 00:00:00', 'Alan Navarrete', 351, 21);
+(178, 'Salida', 10, '2024-11-22 00:00:00', 'admin stock', 376, 19);
 
 --
 -- Disparadores `salida`
@@ -418,32 +405,24 @@ ALTER TABLE `cliente`
   ADD PRIMARY KEY (`id_cliente`);
 
 --
--- Indices de la tabla `detalle_factura`
---
-ALTER TABLE `detalle_factura`
-  ADD PRIMARY KEY (`id_detalle_factura`),
-  ADD KEY `factura_id_factura` (`factura_id_factura`);
-
---
 -- Indices de la tabla `detalle_guia`
 --
 ALTER TABLE `detalle_guia`
   ADD PRIMARY KEY (`id_detalle_guia`),
-  ADD KEY `guia_traslado_id_guia_traslado` (`guia_traslado_id_guia_traslado`);
+  ADD KEY `guia_salida_id_guia_salida` (`guia_salida_id_guia_salida`) USING BTREE;
 
 --
--- Indices de la tabla `factura`
+-- Indices de la tabla `detalle_recepcion`
 --
-ALTER TABLE `factura`
-  ADD PRIMARY KEY (`id_factura`),
-  ADD KEY `usuario_id_usuario` (`usuario_id_usuario`),
-  ADD KEY `inventario_id_inventario` (`inventario_id_inventario`);
+ALTER TABLE `detalle_recepcion`
+  ADD PRIMARY KEY (`id_detalle_recepcion`),
+  ADD KEY `recepcion_id_recepcion` (`recepcion_id_recepcion`) USING BTREE;
 
 --
--- Indices de la tabla `guia_traslado`
+-- Indices de la tabla `guia_salida`
 --
-ALTER TABLE `guia_traslado`
-  ADD PRIMARY KEY (`id_guia_traslado`),
+ALTER TABLE `guia_salida`
+  ADD PRIMARY KEY (`id_guia_salida`),
   ADD KEY `cliente_id_cliente` (`cliente_id_cliente`),
   ADD KEY `usuario_id_usuario` (`usuario_id_usuario`),
   ADD KEY `inventario_id_inventario` (`inventario_id_inventario`);
@@ -482,6 +461,14 @@ ALTER TABLE `proveedor`
   ADD PRIMARY KEY (`id_proveedor`);
 
 --
+-- Indices de la tabla `recepcion`
+--
+ALTER TABLE `recepcion`
+  ADD PRIMARY KEY (`id_recepcion`),
+  ADD KEY `usuario_id_usuario` (`usuario_id_usuario`),
+  ADD KEY `inventario_id_inventario` (`inventario_id_inventario`);
+
+--
 -- Indices de la tabla `salida`
 --
 ALTER TABLE `salida`
@@ -518,46 +505,40 @@ ALTER TABLE `cliente`
   MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
--- AUTO_INCREMENT de la tabla `detalle_factura`
---
-ALTER TABLE `detalle_factura`
-  MODIFY `id_detalle_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
-
---
 -- AUTO_INCREMENT de la tabla `detalle_guia`
 --
 ALTER TABLE `detalle_guia`
-  MODIFY `id_detalle_guia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id_detalle_guia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
--- AUTO_INCREMENT de la tabla `factura`
+-- AUTO_INCREMENT de la tabla `detalle_recepcion`
 --
-ALTER TABLE `factura`
-  MODIFY `id_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=148;
+ALTER TABLE `detalle_recepcion`
+  MODIFY `id_detalle_recepcion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 
 --
--- AUTO_INCREMENT de la tabla `guia_traslado`
+-- AUTO_INCREMENT de la tabla `guia_salida`
 --
-ALTER TABLE `guia_traslado`
-  MODIFY `id_guia_traslado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
+ALTER TABLE `guia_salida`
+  MODIFY `id_guia_salida` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT de la tabla `inventario`
 --
 ALTER TABLE `inventario`
-  MODIFY `id_inventario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=352;
+  MODIFY `id_inventario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=377;
 
 --
 -- AUTO_INCREMENT de la tabla `movimiento`
 --
 ALTER TABLE `movimiento`
-  MODIFY `id_movimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=291;
+  MODIFY `id_movimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=331;
 
 --
 -- AUTO_INCREMENT de la tabla `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedor`
@@ -566,10 +547,16 @@ ALTER TABLE `proveedor`
   MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
+-- AUTO_INCREMENT de la tabla `recepcion`
+--
+ALTER TABLE `recepcion`
+  MODIFY `id_recepcion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=172;
+
+--
 -- AUTO_INCREMENT de la tabla `salida`
 --
 ALTER TABLE `salida`
-  MODIFY `id_salida` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=164;
+  MODIFY `id_salida` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=179;
 
 --
 -- AUTO_INCREMENT de la tabla `ubicacion`
@@ -588,31 +575,24 @@ ALTER TABLE `usuario`
 --
 
 --
--- Filtros para la tabla `detalle_factura`
---
-ALTER TABLE `detalle_factura`
-  ADD CONSTRAINT `detalle_factura_ibfk_1` FOREIGN KEY (`factura_id_factura`) REFERENCES `factura` (`id_factura`) ON DELETE CASCADE;
-
---
 -- Filtros para la tabla `detalle_guia`
 --
 ALTER TABLE `detalle_guia`
-  ADD CONSTRAINT `detalle_guia_ibfk_1` FOREIGN KEY (`guia_traslado_id_guia_traslado`) REFERENCES `guia_traslado` (`id_guia_traslado`) ON DELETE CASCADE;
+  ADD CONSTRAINT `detalle_guia_ibfk_1` FOREIGN KEY (`guia_salida_id_guia_salida`) REFERENCES `guia_salida` (`id_guia_salida`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `factura`
+-- Filtros para la tabla `detalle_recepcion`
 --
-ALTER TABLE `factura`
-  ADD CONSTRAINT `factura_ibfk_1` FOREIGN KEY (`usuario_id_usuario`) REFERENCES `usuario` (`id_usuario`),
-  ADD CONSTRAINT `factura_ibfk_2` FOREIGN KEY (`inventario_id_inventario`) REFERENCES `inventario` (`id_inventario`) ON DELETE CASCADE;
+ALTER TABLE `detalle_recepcion`
+  ADD CONSTRAINT `detalle_recepcion_ibfk_1` FOREIGN KEY (`recepcion_id_recepcion`) REFERENCES `recepcion` (`id_recepcion`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `guia_traslado`
+-- Filtros para la tabla `guia_salida`
 --
-ALTER TABLE `guia_traslado`
-  ADD CONSTRAINT `guia_traslado_ibfk_1` FOREIGN KEY (`cliente_id_cliente`) REFERENCES `cliente` (`id_cliente`),
-  ADD CONSTRAINT `guia_traslado_ibfk_2` FOREIGN KEY (`usuario_id_usuario`) REFERENCES `usuario` (`id_usuario`),
-  ADD CONSTRAINT `guia_traslado_ibfk_3` FOREIGN KEY (`inventario_id_inventario`) REFERENCES `inventario` (`id_inventario`) ON DELETE CASCADE;
+ALTER TABLE `guia_salida`
+  ADD CONSTRAINT `guia_salida_ibfk_1` FOREIGN KEY (`cliente_id_cliente`) REFERENCES `cliente` (`id_cliente`),
+  ADD CONSTRAINT `guia_salida_ibfk_2` FOREIGN KEY (`usuario_id_usuario`) REFERENCES `usuario` (`id_usuario`),
+  ADD CONSTRAINT `guia_salida_ibfk_3` FOREIGN KEY (`inventario_id_inventario`) REFERENCES `inventario` (`id_inventario`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `inventario`
@@ -637,6 +617,13 @@ ALTER TABLE `producto`
   ADD CONSTRAINT `producto_ibfk_1` FOREIGN KEY (`categoria_id_categoria`) REFERENCES `categoria` (`id_categoria`),
   ADD CONSTRAINT `producto_ibfk_2` FOREIGN KEY (`ubicacion_id_ubicacion`) REFERENCES `ubicacion` (`id_ubicacion`),
   ADD CONSTRAINT `producto_ibfk_3` FOREIGN KEY (`proveedor_id_proveedor`) REFERENCES `proveedor` (`id_proveedor`);
+
+--
+-- Filtros para la tabla `recepcion`
+--
+ALTER TABLE `recepcion`
+  ADD CONSTRAINT `recepcion_ibfk_1` FOREIGN KEY (`usuario_id_usuario`) REFERENCES `usuario` (`id_usuario`),
+  ADD CONSTRAINT `recepcion_ibfk_2` FOREIGN KEY (`inventario_id_inventario`) REFERENCES `inventario` (`id_inventario`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `salida`
