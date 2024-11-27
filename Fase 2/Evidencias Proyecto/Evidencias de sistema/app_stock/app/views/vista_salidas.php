@@ -131,18 +131,18 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
         </div>
         
         <div class="col-auto d-flex gap-2 align-items-center">
-            <form action="../libs/guia_salida.php" method="GET" class="d-flex">
+            <form action="../libs/orden_salida.php" method="GET" class="d-flex">
 
-                <select class="form-select  me-2 mb-2" name="nro_guia" id="nro_guia" style="width: 200px;">
-                    <option value="" disabled selected> Nro Guía</option>
+                <select class="form-select  me-2 mb-2" name="nro_orden" id="nro_orden" style="width: 200px;">
+                    <option value="" disabled selected> Nro Orden salida</option>
                     <?php
                     $guia_nro = Salida::listarNroGuia();
                     foreach ($guia_nro as $guia) {
-                        echo "<option value='" . $guia['nro_guia'] . "'>" . $guia['nro_guia'] . "</option>";
+                        echo "<option value='" . $guia['nro_orden'] . "'>" . $guia['nro_orden'] . "</option>";
                     }
                     ?>
                 </select>
-                <button type="submit" class="btn btn-success mb-2 btn-sm">Generar Guía</button>
+                <button type="submit" class="btn btn-success mb-2 btn-sm">Generar Orden</button>
             </form>
         </div>
 
@@ -158,7 +158,7 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                 <input type="text" id="filtroCodigo" class="form-control" placeholder="Filtrar por código">
             </div>
             <div class="col-md-3">
-                <input type="text" id="filtroGuia" class="form-control" placeholder="Filtrar por nro guia">
+                <input type="text" id="filtroOrden" class="form-control" placeholder="Filtrar por nro orden">
             </div>
         </form>
 
@@ -171,8 +171,8 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                         <table id="tabla-inventario" class="table-container table table-bordered">
                             <thead class="table table-stripped">
                                 <tr class="highlight">
-                                    <th>Nro. guía</th>
-                                    <th>Código prod</th>
+                                    <th>Nro. Orden</th>
+                                    <th>Código</th>
                                     <th>Producto</th>
                                     <th>Cantidad</th>
                                     <th>Destino</th>
@@ -183,7 +183,7 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                             <tbody>
                                 <?php foreach ($listaSalidas as $salida): ?>
                                     <tr>
-                                        <td><?php echo htmlspecialchars($salida['nro_guia']); ?></td>
+                                        <td><?php echo htmlspecialchars($salida['nro_orden']); ?></td>
                                         <td><?php echo htmlspecialchars($salida['cod_producto']); ?></td>
                                         <td><?php echo htmlspecialchars($salida['nombre_producto']); ?></td>
                                         <td><?php echo htmlspecialchars($salida['cantidad_salida']); ?></td>
