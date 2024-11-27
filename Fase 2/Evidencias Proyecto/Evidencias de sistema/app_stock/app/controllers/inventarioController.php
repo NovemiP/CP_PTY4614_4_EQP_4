@@ -50,7 +50,9 @@ if ($accion) {
                 // Llama a agregarEntrada con el ID del producto y el ID del usuario
                 $resultado = Inventario::agregarEntrada($existencia_inicial, $fecha, $registrado_por, $usuario_id, $producto_id);
                 
+
                 $mensaje_entrada = $resultado ? 'Entrada agregada exitosamente.' :  'Ya existe un producto registrado con este código en el inventario.';
+
             } else {
                 $mensaje_entrada = 'El ID del producto, la cantidad y el usuario no pueden estar vacíos para una entrada.';
             }
@@ -65,7 +67,9 @@ if ($accion) {
                     // Intentar registrar la salida
                     $resultado = Salida::registrarSalida($inventario_id, $cliente_id, $cantidad_salida, $fecha_salida, $registrado_por);
 
+
                     $mensaje_salida = $resultado ? 'Salida registrada exitosamente.' : 'La existencia es insuficiente o el inventario de este producto se encuentra inactivo.';
+
                 } else {
                     $mensaje_salida = 'El ID del usuario que registra la salida no puede estar vacío.';
                 }
@@ -74,6 +78,7 @@ if ($accion) {
                 $mensaje_salida = 'El ID del inventario y la cantidad no pueden estar vacíos para una salida.';
             }
             break;
+
 
 
 
@@ -97,13 +102,14 @@ if ($accion) {
         //     break;
 
 
-
         case 'cambiar_estado':
             $id = $_POST['id_inventario']; // obtener el id del inventario
             $estadoActual = $_POST['estado_inve']; // obtener el estado actual del inventario
 
             // determinar el nuevo estado en base al estado actual del producto
+
             $nuevoEstado = ($estadoActual === 'Activo') ? 'Inactivo' : 'Activo'; // alterna entre activo y agotado
+
             // llamo al metodo para cambiar el estado
             Inventario::cambiarEstadoInventario($id, $nuevoEstado);
             echo "<script>
