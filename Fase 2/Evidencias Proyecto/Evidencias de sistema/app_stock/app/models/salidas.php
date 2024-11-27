@@ -26,9 +26,9 @@ class Salida
                 producto.nombre_producto,
                 cliente.nombre,
                 cliente.direccion,
-                (SELECT nro_guia FROM guia_salida 
-                    WHERE guia_salida.inventario_id_inventario = inventario.id_inventario 
-                    ORDER BY guia_salida.nro_guia DESC LIMIT 1) AS nro_guia
+                (SELECT nro_orden FROM orden_salida 
+                    WHERE orden_salida.inventario_id_inventario = inventario.id_inventario 
+                    ORDER BY orden_salida.nro_orden DESC LIMIT 1) AS nro_orden
             FROM salida 
             LEFT JOIN inventario ON salida.inventario_id_inventario = inventario.id_inventario 
             LEFT JOIN producto ON inventario.producto_id_producto = producto.id_producto
@@ -145,13 +145,13 @@ class Salida
             }
 
             $destino = $cliente['direccion'];
-            $nro_guia = 'GT' . str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT); // Ejemplo: GT000001
+            $nro_orden = 'GT' . str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT); // Ejemplo: GT000001
 
-            // Insertar la guía en la tabla `guia_traslado`
-            $sqlGuia = "INSERT INTO guia_salida (nro_guia, fecha_emision, destino, cliente_id_cliente, usuario_id_usuario, inventario_id_inventario)
-                    VALUES (:nro_guia, :fecha_emision, :destino, :cliente_id, :usuario_id, :inventario_id)";
+            // Insertar en la tabla orden de salida
+            $sqlGuia = "INSERT INTO orden_salida (nro_orden, fecha_emision, destino, cliente_id_cliente, usuario_id_usuario, inventario_id_inventario)
+                    VALUES (:nro_orden, :fecha_emision, :destino, :cliente_id, :usuario_id, :inventario_id)";
             $consultaGuia = $conexionBD->prepare($sqlGuia);
-            $consultaGuia->bindParam(':nro_guia', $nro_guia);
+            $consultaGuia->bindParam(':nro_guia', $nro_orden);
             $consultaGuia->bindParam(':fecha_emision', $fecha_salida);
             $consultaGuia->bindParam(':destino', $destino);
             $consultaGuia->bindParam(':cliente_id', $cliente_id, PDO::PARAM_INT);
@@ -160,10 +160,10 @@ class Salida
             $consultaGuia->execute();
 
 
-            //obtiene el id de la factura reciente para poder llenar el detalle de la factura
+            //obtiene el id de la orden reciente para poder llenar el detalle de la orden de salida
             $guia_id = $conexionBD->lastInsertId();
             if (!$guia_id) {
-                throw new Exception("No se pudo obtener el ID de la guia de traslado.");
+                throw new Exception("No se pudo obtener el ID de la orden de salida.");
             }
 
             //inserta en la tabla detalle factura
@@ -172,7 +172,7 @@ class Salida
 
             $consultaDetalleGuia = $conexionBD->prepare($sqlDetalleGuia);
             $consultaDetalleGuia->bindParam(':cantidad', $cantidad_salida, PDO::PARAM_INT);
-            $consultaDetalleGuia->bindParam(':guia_salida_id_guia_salida', $guia_id, PDO::PARAM_INT);
+            $consultaDetalleGuia->bindParam(':orden_salida_id_orden_salida', $guia_id, PDO::PARAM_INT);
 
             $consultaDetalleGuia->execute();
 
@@ -183,11 +183,11 @@ class Salida
         }
     }
 
-    //listar nro de guia
+    //listar nro de orden de salida
     public static function listarNroGuia(){
         $conexionBD = self::crearInstancia();
 
-        $sql = "SELECT nro_guia FROM guia_salida";
+        $sql = "SELECT nro_orden FROM orden_salida";
         $consulta = $conexionBD->prepare($sql);
         $consulta->execute();
 
