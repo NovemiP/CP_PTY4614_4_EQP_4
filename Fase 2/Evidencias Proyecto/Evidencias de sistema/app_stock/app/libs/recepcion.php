@@ -8,7 +8,7 @@ class RecepcionPDF extends TCPDF
     public function Header()
     {
         $this->SetFont('helvetica', 'B', 12);
-        $this->Cell(0, 10, 'Comprobante de recepción', 0, 1, 'C');
+        $this->Cell(0, 10, 'Orden recepción de entrada', 0, 1, 'C');
         $this->Ln(5);
     }
 
@@ -59,7 +59,7 @@ if ($nro_recepcion_seleccionado) {
         if ($datos) {
             $pdf->SetFont('helvetica', '', 10);
             // info del comprobante de recepción
-            $pdf->Cell(35, 10, 'Nro. de recepción:', 0, 0, 'L');
+            $pdf->Cell(35, 10, 'Nro. de Orden:', 0, 0, 'L');
             $pdf->Cell(60, 10, $datos[0]['nro_recepcion'], 0, 1, 'L');
             $pdf->Cell(30, 10, 'Proveedor:', 0, 0, 'L');
             $pdf->Cell(60, 10, $datos[0]['nombre_prove'], 0, 1, 'L');
@@ -116,7 +116,7 @@ if ($nro_recepcion_seleccionado) {
         }
 
         // Descargar el PDF
-        $pdf->Output('Comprobante de recepción__' . $nro_recepcion_seleccionado . '.pdf', 'D');
+        $pdf->Output('Orden recepción de entrada__' . $nro_recepcion_seleccionado . '.pdf', 'D');
     } catch (PDOException $e) {
         echo "Error en la conexión: " . $e->getMessage();
     }
