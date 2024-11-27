@@ -131,7 +131,7 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
             <form action="../libs/recepcion.php" method="GET" class="d-flex">
 
                 <select class="form-select  me-2 mb-2" name="nro_recepcion" id="nro_recepcion" style="width: 200px;">
-                    <option value="" disabled selected> Nro Recepción</option>
+                    <option value="" disabled selected> Nro Orden entrada</option>
                     <?php
                     $num_recepcion = Inventario::listarNroRecepcion();
                     foreach ($num_recepcion as $recepcion) {
@@ -139,7 +139,7 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                     }
                     ?>
                 </select>
-                <button type="submit" class="btn btn-success mb-2 btn-sm">Generar Comprobante</button>
+                <button type="submit" class="btn btn-success mb-2 btn-sm">Generar Orden</button>
             </form>
         </div>
 
@@ -151,7 +151,7 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                 <input type="text" id="filtroCodigo" class="form-control" placeholder="Filtrar por código producto">
             </div>
             <div class="col-md-3">
-                <input type="text" id="filtroRecepcion" class="form-control" placeholder="Filtrar por nro recepción">
+                <input type="text" id="filtroRecepcion" class="form-control" placeholder="Filtrar por nro orden">
             </div>
         </form>
 
@@ -164,8 +164,8 @@ $notificacionesExistencias = Inventario::verificarExistenciasBajas();
                         <table id="tabla-inventario" class="table-container table table-bordered">
                             <thead class="table table-stripped">
                                 <tr class="highlight">
-                                    <th>Nro. Recepción</th>
-                                    <th>Código prod</th>
+                                    <th>Nro. orden</th>
+                                    <th>Código</th>
                                     <th>Producto</th>
                                     <th>Proveedor</th>
                                     <th>Cantidad</th>

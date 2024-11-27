@@ -136,10 +136,10 @@
         });
     });
 
-    //filtrar por guia traslado
+    //filtrar por orden de salida
     $(document).ready(function () {
         // Filtro de búsqueda
-        $("#filtroGuia").on("keyup", function () {
+        $("#filtroOrden").on("keyup", function () {
             var valorBusqueda = $(this).val().toLowerCase();
             $("#tabla-inventario tbody tr").filter(function () {
                 $(this).toggle($(this).text().toLowerCase().indexOf(valorBusqueda) > -1);

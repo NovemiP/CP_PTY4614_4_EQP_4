@@ -145,10 +145,10 @@ $totalPaginas = ceil($totalInventarios / $limit);
                         <table id="tabla-inventario" class="table-container table table-bordered">
                             <thead class="table table-stripped">
                                 <tr class="highlight">
-                                    <th>Código prod</th>
+                                    <th>Código</th>
                                     <th>Producto</th>
-                                    <th>Existencia incial</th>
-                                    <th>Existencia actual</th>
+                                    <th>Ex. incial</th>
+                                    <th>Ex. actual</th>
                                     <th>Ubicación</th>
                                     <th>Valor unitario</th>
                                     <th>Iva</th>
