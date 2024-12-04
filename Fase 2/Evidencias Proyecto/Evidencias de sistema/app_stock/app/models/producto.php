@@ -80,50 +80,7 @@ class Producto
     }
     
     
-    // public static function listarProdEntrada($nro_factura = null)
-    // {
-    //     try {
-    //         $conexionBD = self::crearInstancia();
-
-    //         // Si se pasa el número de factura, se filtra en la consulta
-    //         if ($nro_factura) {
-    //             $sql = "SELECT producto.*, 
-    //                     proveedor.nombre_prove, 
-    //                     categoria.nombre_categoria, 
-    //                     ubicacion.nombre_zona 
-    //                 FROM producto
-    //                 LEFT JOIN proveedor ON producto.proveedor_id_proveedor = proveedor.id_proveedor
-    //                 LEFT JOIN categoria ON producto.categoria_id_categoria = categoria.id_categoria
-    //                 LEFT JOIN ubicacion ON producto.ubicacion_id_ubicacion = ubicacion.id_ubicacion
-    //                 WHERE producto.nro_factura = :nro_factura";
-    //         } else {
-    //             // Si no se pasa el número de factura, se listan todos los productos
-    //             $sql = "SELECT producto.*, 
-    //                     proveedor.nombre_prove, 
-    //                     categoria.nombre_categoria, 
-    //                     ubicacion.nombre_zona 
-    //                 FROM producto
-    //                 LEFT JOIN proveedor ON producto.proveedor_id_proveedor = proveedor.id_proveedor
-    //                 LEFT JOIN categoria ON producto.categoria_id_categoria = categoria.id_categoria
-    //                 LEFT JOIN ubicacion ON producto.ubicacion_id_ubicacion = ubicacion.id_ubicacion";
-    //         }
-
-    //         $consulta = $conexionBD->prepare($sql);
-
-    //         // Si se pasa el número de factura, se vincula a la consulta
-    //         if ($nro_factura) {
-    //             $consulta->bindParam(':nro_factura', $nro_factura, PDO::PARAM_STR);
-    //         }
-
-    //         $consulta->execute();
-
-    //         return $consulta->fetchAll(PDO::FETCH_ASSOC);
-    //     } catch (Exception $e) {
-    //         echo "Error al listar productos por factura: " . $e->getMessage();
-    //         return [];
-    //     }
-    // }
-
+    
 
     //listar productos con inventario para generar salida
     public static function listarProdConInventario()
@@ -215,6 +172,16 @@ class Producto
             //si el proveedor no se encuenta en estado activo se lanza una excepcion
             if (!$proveedor || $proveedor['estado'] !== 'Activo') {
                 throw new Exception("No se puede registrar el producto, porque el proveedor asociado se encuentra inactivo.");
+            }
+
+            //verifica si el nro de factura ya esta asociado a otro producto del inventario
+            $consultaFactura = $conexionBD->prepare("SELECT COUNT(*) AS total from producto WHERE nro_factura = :nro_factura");
+            $consultaFactura->bindParam('nro_factura', $nro_factura, PDO::PARAM_STR);
+            $consultaFactura->execute();
+            $resultadoFactura = $consultaFactura->fetch(PDO::FETCH_ASSOC);
+
+            if ($resultadoFactura['total']> 0) {
+                throw new Exception("El número de factura ya esta asociado a otro producto.");
             }
 
 
@@ -338,4 +305,7 @@ class Producto
             return false;
         }
     }
+
+   
+    
 }
